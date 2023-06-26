@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather
+  labels:
+    app: weather
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: weather
+      tags.datadoghq.com/version: "0.1a"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: weather
+        admission.datadoghq.com/enabled: "true"
+        tags.datadoghq.com/env: sandbox
+        tags.datadoghq.com/service: weather
+        tags.datadoghq.com/version: "0.1a"
+      annotations:
+        admission.datadoghq.com/dotnet-lib.version: v2.32.0
+    spec:
+      containers:
+        - name: weather
+          image: yaalexf/sandbox:dotnet
+          imagePullPolicy: Always
+          env:
+            - name: DD_LOGS_INJECTION
+              value: "true"
+            - name: DD_RUNTIME_METRICS_ENABLED
+              value: "true"
+          resources:
+            limits: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather
+spec:
+  selector:
+    app.kubernetes.io/name: weather
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: weather
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /weather(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: weather
+            port:
+              number: 80
