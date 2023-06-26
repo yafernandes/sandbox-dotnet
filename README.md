@@ -5,14 +5,11 @@
 ```bash
 dotnet add package Serilog.Sinks.Console
 dotnet add package Serilog.Formatting.Compact
-# dotnet add package log4net
 ```
 
 ## Log parsing
 
-One easy option is to set your attributes as [default](https://app.datadoghq.com/logs/pipelines/remapping) remaps.
-
-### Serilog
+Host, Service, Status, and Timestamp are reserved and important attributes for Datadog's log management. Datadog has defaults mappings that can be ammeded if requried.  [Serilog](https://serilog.net/) has some attributes that dot not align with Datadog's defaults. Go [here](https://app.datadoghq.com/logs/pipelines/remapping) to ammend existing remaps. Because of Serilog naming requirements, you will also need to ammend some Datadog attributes like `dd_service` and `dd_trace_id`.
 
 ```json
 {
