@@ -26,4 +26,3 @@ One easy option is to set your attributes as [default](https://app.datadoghq.com
     "dd_span_id": "7112168250039906946"
 }
 ```
-# sandbox-dotnet
